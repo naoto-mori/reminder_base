@@ -24,11 +24,15 @@ public class Main extends HttpServlet {
 
 		//⓪アプリケーションスコープを定義。リマインドリストを新規作成してアプリケーションスコープに保存。
 		ServletContext application = this.getServletContext();
-		List<Remind> remindList =  new ArrayList<>(); // Remind.javaはJavaBeans。
-		application.setAttribute("remindList", remindList);
+		List<Remind> remindList = (List<Remind>)application.getAttribute("remindList");
+		if(remindList == null) {//remindListを初回のみ作成するように修正(2020/04/26[mori])
+			remindList =  new ArrayList<>(); // Remind.javaはJavaBeans。
+			application.setAttribute("remindList", remindList);
+		}
+
 
 		//①main.jspへフォワード
-		String path = "/main.jsp";
+		String path = "/WEB-INF/jsp/main.jsp";  //(2020/04/26[mori])
 		RequestDispatcher dis = request.getRequestDispatcher(path);
 		dis.forward(request, response);
 
@@ -64,11 +68,13 @@ public class Main extends HttpServlet {
 			//アプリケーションスコープに保存
 			application.setAttribute("remindList", remindList);
 
+		}else {//例外処理の部分を追加(2020/04/26[mori])
+			request.setAttribute("errorMsg", "Please input text!");
 		}
 
 
 		//⑤main.jspへフォワード
-		String path = "/main.jsp";
+		String path = "/WEB-INF/jsp/main.jsp";  //(2020/04/26[mori])
 		RequestDispatcher dis = request.getRequestDispatcher(path);
 		dis.forward(request, response);
 
